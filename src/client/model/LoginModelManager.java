@@ -17,20 +17,12 @@ public class LoginModelManager implements LoginModel
 
   @Override public void processLogin(LoginObject lo)
   {
-    try {
-      client.login(lo);
-    } catch (RemoteException e) {
-      System.err.println("Login attempt failed ... [LoginModelManager.processLogin()]");
-    }
+    client.login(lo);
   }
 
 
   @Override public void disconnect()
   {
-    try {
-      client.disconnect();
-    } catch (RemoteException e) {
-      System.out.println("Disconnection failed ... [LoginModelManager.disconnect()]");;
-    }
+    client.disconnect();
   }
 }

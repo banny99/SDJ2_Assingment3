@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
-public class RMIClient implements Client
+public class RMIClient implements Client, Client_Remote
 {
   private ChatServer_Remote serverStub;
   private PropertyChangeSupport changeSupport;

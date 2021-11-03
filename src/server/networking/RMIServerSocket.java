@@ -1,11 +1,10 @@
 package server.networking;
 
-import client.networking.Client;
+import client.networking.Client_Remote;
 import server.model.Password;
 import server.model.Username;
 import shared.LoginObject;
 import shared.MessageObject;
-
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -16,7 +15,7 @@ public class RMIServerSocket extends UnicastRemoteObject implements ChatServer_R
 {
 
   private ArrayList<LoginObject> connections;
-  private ArrayList<Client> clientStubs;
+  private ArrayList<Client_Remote> clientStubs;
 
   public RMIServerSocket() throws RemoteException
   {
@@ -31,7 +30,7 @@ public class RMIServerSocket extends UnicastRemoteObject implements ChatServer_R
   }
 
 
-  @Override public String rmiLogin(Client client, LoginObject loginObject) throws RemoteException
+  @Override public String rmiLogin(Client_Remote client, LoginObject loginObject) throws RemoteException
   {
     String reply;
     try
@@ -47,13 +46,13 @@ public class RMIServerSocket extends UnicastRemoteObject implements ChatServer_R
     if (reply.equals("approved"))
     {
       addConnection(client, loginObject);
-      for(Client c : clientStubs)
+      for(Client_Remote c : clientStubs)
         c.updateConnections(connections);
     }
 
     return reply;
   }
-  private void addConnection(Client client, LoginObject loginObject)
+  private void addConnection(Client_Remote client, LoginObject loginObject)
   {
     connections.add(loginObject);
     clientStubs.add(client);
@@ -68,7 +67,7 @@ public class RMIServerSocket extends UnicastRemoteObject implements ChatServer_R
   {
     if (messageObject.getChatMembers().isEmpty())
     {
-      for(Client c : clientStubs)
+      for(Client_Remote c : clientStubs)
         c.receiveReply(messageObject);
     }
     else
@@ -79,16 +78,16 @@ public class RMIServerSocket extends UnicastRemoteObject implements ChatServer_R
   }
 
 
-  @Override public void disconnect(Client client) throws RemoteException
+  @Override public void disconnect(Client_Remote client) throws RemoteException
   {
     if (clientStubs.contains(client))
     {
       removeConnection(client);
-      for (Client c : clientStubs)
+      for (Client_Remote c : clientStubs)
         c.updateConnections(connections);
     }
   }
-  private void removeConnection(Client client)
+  private void removeConnection(Client_Remote client)
   {
     int index = clientStubs.indexOf(client);
     connections.remove(index);

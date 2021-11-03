@@ -21,12 +21,8 @@ public class ModelManager implements Model
     changeSupport = new PropertyChangeSupport(this);
 
     //subscription
-    try {
-      this.client.addListener("msg", this::receiveMsg);
-      this.client.addListener("cnct", this::updateConnections);
-    } catch (RemoteException e) {
-      System.err.println("adding listeners failed ... [ModelManager.ModelManager()]");
-    }
+    this.client.addListener("msg", this::receiveMsg);
+    this.client.addListener("cnct", this::updateConnections);
 
   }
 
@@ -35,11 +31,7 @@ public class ModelManager implements Model
   {
     if (updatedConnections == null)
     {
-      try {
-        client.requestConnections();
-      } catch (RemoteException e) {
-        System.out.println("requesting connections failed ... [ModelManager.requestConnections()]");
-      }
+      client.requestConnections();
     }
     else
       changeSupport.firePropertyChange("cnct", null, updatedConnections);
@@ -47,11 +39,7 @@ public class ModelManager implements Model
 
   @Override public void processMessage(MessageObject msg)
   {
-    try {
-      client.sendMessage(msg);
-    } catch (RemoteException e) {
-      System.err.println("message sending failed ... [ModelManager.processMessage()]");
-    }
+    client.sendMessage(msg);
   }
 
   //listeners update-methods
@@ -80,11 +68,7 @@ public class ModelManager implements Model
 
   @Override public void disconnect()
   {
-    try {
-      client.disconnect();
-    } catch (RemoteException e) {
-      System.out.println("Disconnection failed ... [ModelManager.disconnect()]");
-    }
+    client.disconnect();
   }
 
 }
