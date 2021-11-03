@@ -3,6 +3,8 @@ package client.model;
 import client.networking.Client;
 import shared.LoginObject;
 
+import java.rmi.RemoteException;
+
 public class LoginModelManager implements LoginModel
 {
   private final Client client;
@@ -15,12 +17,20 @@ public class LoginModelManager implements LoginModel
 
   @Override public void processLogin(LoginObject lo)
   {
-    client.login(lo);
+    try {
+      client.login(lo);
+    } catch (RemoteException e) {
+      System.err.println("Login attempt failed ... [LoginModelManager.processLogin()]");
+    }
   }
 
 
   @Override public void disconnect()
   {
-    client.disconnect();
+    try {
+      client.disconnect();
+    } catch (RemoteException e) {
+      System.out.println("Disconnection failed ... [LoginModelManager.disconnect()]");;
+    }
   }
 }

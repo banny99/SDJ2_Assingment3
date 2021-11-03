@@ -6,6 +6,7 @@ import shared.MessageObject;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class ModelManager implements Model
@@ -20,22 +21,37 @@ public class ModelManager implements Model
     changeSupport = new PropertyChangeSupport(this);
 
     //subscription
-    this.client.addListener("msg", this::receiveMsg);
-    this.client.addListener("cnct", this::updateConnections);
+    try {
+      this.client.addListener("msg", this::receiveMsg);
+      this.client.addListener("cnct", this::updateConnections);
+    } catch (RemoteException e) {
+      System.err.println("adding listeners failed ... [ModelManager.ModelManager()]");
+    }
+
   }
 
 
   @Override public void requestConnections()
   {
     if (updatedConnections == null)
-      client.requestConnections();
+    {
+      try {
+        client.requestConnections();
+      } catch (RemoteException e) {
+        System.out.println("requesting connections failed ... [ModelManager.requestConnections()]");
+      }
+    }
     else
       changeSupport.firePropertyChange("cnct", null, updatedConnections);
   }
 
   @Override public void processMessage(MessageObject msg)
   {
-    client.sendMessage(msg);
+    try {
+      client.sendMessage(msg);
+    } catch (RemoteException e) {
+      System.err.println("message sending failed ... [ModelManager.processMessage()]");
+    }
   }
 
   //listeners update-methods
@@ -64,7 +80,11 @@ public class ModelManager implements Model
 
   @Override public void disconnect()
   {
-    client.disconnect();
+    try {
+      client.disconnect();
+    } catch (RemoteException e) {
+      System.out.println("Disconnection failed ... [ModelManager.disconnect()]");
+    }
   }
 
 }

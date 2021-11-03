@@ -1,6 +1,6 @@
 package server.networking;
 
-import client.networking.ChatClient_Remote;
+import client.networking.Client;
 import server.model.Password;
 import server.model.Username;
 import shared.LoginObject;
@@ -16,7 +16,7 @@ public class RMIServerSocket extends UnicastRemoteObject implements ChatServer_R
 {
 
   private ArrayList<LoginObject> connections;
-  private ArrayList<ChatClient_Remote> clientStubs;
+  private ArrayList<Client> clientStubs;
 
   public RMIServerSocket() throws RemoteException
   {
@@ -31,38 +31,68 @@ public class RMIServerSocket extends UnicastRemoteObject implements ChatServer_R
   }
 
 
-  @Override public String rmiLogin(LoginObject loginObject) throws RemoteException
+  @Override public String rmiLogin(Client client, LoginObject loginObject) throws RemoteException
   {
+    String reply;
     try
     {
       new Username(loginObject.getUsername());
       new Password(loginObject.getPassword());
-      return  "approved";
+      reply = "approved";
     }
     catch (IllegalArgumentException e){
-      return e.getMessage();
+      reply = e.getMessage();
     }
-  }
 
+    if (reply.equals("approved"))
+    {
+      addConnection(client, loginObject);
+      for(Client c : clientStubs)
+        c.updateConnections(connections);
+    }
+
+    return reply;
+  }
+  private void addConnection(Client client, LoginObject loginObject)
+  {
+    connections.add(loginObject);
+    clientStubs.add(client);
+  }
   @Override public ArrayList<LoginObject> getConnections() throws RemoteException
   {
     return connections;
   }
 
+
   @Override public void rmiChat(MessageObject messageObject) throws RemoteException
   {
-    System.out.println("msg: " + messageObject.getMessageText());
+    if (messageObject.getChatMembers().isEmpty())
+    {
+      for(Client c : clientStubs)
+        c.receiveReply(messageObject);
+    }
+    else
+    {
+      for (LoginObject lo : messageObject.getChatMembers())
+        clientStubs.get(connections.indexOf(lo)).receiveReply(messageObject);
+    }
   }
 
 
-  @Override public void addConnection(LoginObject loginObject)
+  @Override public void disconnect(Client client) throws RemoteException
   {
-    connections.add(loginObject);
-//    clientStubs.add(clientStub);
+    if (clientStubs.contains(client))
+    {
+      removeConnection(client);
+      for (Client c : clientStubs)
+        c.updateConnections(connections);
+    }
   }
-  @Override public void removeConnection(LoginObject loginObject)
+  private void removeConnection(Client client)
   {
-    connections.remove(loginObject);
-//    clientStubs.remove(clientStub);
+    int index = clientStubs.indexOf(client);
+    connections.remove(index);
+    clientStubs.remove(client);
   }
+
 }

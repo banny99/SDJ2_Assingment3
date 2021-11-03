@@ -2,14 +2,23 @@ package client.networking;
 
 import shared.LoginObject;
 import shared.MessageObject;
-import shared.Observable;
 import shared.TransferObject;
 
-public interface Client extends Observable
+import java.beans.PropertyChangeListener;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+
+public interface Client extends Remote
 {
-  void login(LoginObject lo);
-  void sendMessage(MessageObject msg);
-  void receiveReply(TransferObject transferObject);
-  void disconnect();
-  void requestConnections();
+  void login(LoginObject lo) throws RemoteException;
+  void sendMessage(MessageObject msg) throws RemoteException;
+  void receiveReply(MessageObject msg) throws RemoteException;
+  void disconnect() throws RemoteException;
+  void requestConnections() throws RemoteException;
+
+  void addListener(String eventName, PropertyChangeListener listener) throws RemoteException;
+  void removeListener(String eventName, PropertyChangeListener listener) throws RemoteException;
+
+  void updateConnections(ArrayList<LoginObject> connections) throws RemoteException;
 }
