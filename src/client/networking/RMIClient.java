@@ -11,17 +11,24 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
-public class RMIClient implements Client
+public class RMIClient implements Client, ChatClient_Remote
 {
 
+  private LoginObject logedUser = null;
   private ChatServer_Remote serverStub;
   private PropertyChangeSupport changeSupport;
 
   public RMIClient()
   {
     changeSupport = new PropertyChangeSupport(this);
+
+
     try {
+//      UnicastRemoteObject.exportObject(this, 1099);
+//      Naming.rebind("client", this);
+
       serverStub = (ChatServer_Remote) Naming.lookup("messenger");
     } catch (NotBoundException | MalformedURLException | RemoteException e) {
       e.printStackTrace();
@@ -30,17 +37,28 @@ public class RMIClient implements Client
 
   @Override public void login(LoginObject lo)
   {
+    String serverReply = "denied";
+
     try {
-      String serverReply = serverStub.rmiLogin(lo);
-
-      //when login approved ->run communication thread
-      if (!serverReply.equals("approved"))
-        throw new DeniedLoginException(serverReply);
-
+      serverReply = serverStub.rmiLogin(lo);
     } catch (RemoteException e) {
-      e.printStackTrace();
+      System.err.println("Remote exception when trying to log in [RMIClient.login()]");
     }
 
+    //when login approved
+    if (serverReply.equals("approved"))
+    {
+      try {
+        serverStub.addConnection(lo);
+        logedUser = lo;
+      } catch (RemoteException e) {
+        e.printStackTrace();
+      }
+    }
+    else
+    {
+      throw new DeniedLoginException(serverReply);
+    }
   }
 
   @Override public void sendMessage(MessageObject msg)
@@ -64,11 +82,23 @@ public class RMIClient implements Client
   @Override public void disconnect()
   {
     System.out.println("RMI trying to disconnect");
+    try {
+      serverStub.removeConnection(logedUser);
+    } catch (RemoteException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override public void requestConnections()
   {
     System.out.println("RMI trying to request connections");
+    try {
+      ArrayList<LoginObject> connections = serverStub.getConnections();
+      changeSupport.firePropertyChange("cnct", null, connections);
+      System.out.println(connections);
+    } catch (RemoteException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override public void addListener(String eventName, PropertyChangeListener listener)
