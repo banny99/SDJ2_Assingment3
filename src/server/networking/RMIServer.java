@@ -11,13 +11,13 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
-public class RMIServerSocket extends UnicastRemoteObject implements ChatServer_Remote
+public class RMIServer extends UnicastRemoteObject implements ChatServer_Remote
 {
 
   private ArrayList<LoginObject> connections;
   private ArrayList<Client_Remote> clientStubs;
 
-  public RMIServerSocket() throws RemoteException
+  public RMIServer() throws RemoteException
   {
     super();
     connections = new ArrayList<>();

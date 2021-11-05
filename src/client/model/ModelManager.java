@@ -13,6 +13,8 @@ public class ModelManager implements Model
 {
   private final Client client;
   private final PropertyChangeSupport changeSupport;
+
+  private LoginObject loggedUser;
   private ArrayList<LoginObject> updatedConnections;
 
   public ModelManager(Client client)

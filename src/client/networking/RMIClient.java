@@ -15,6 +15,7 @@ public class RMIClient implements Client, Client_Remote
 {
   private ChatServer_Remote serverStub;
   private PropertyChangeSupport changeSupport;
+  private LoginObject loggedUser = null;
 
   public RMIClient()
   {
@@ -40,7 +41,12 @@ public class RMIClient implements Client, Client_Remote
     }
 
     //when login approved
-    if (!serverReply.equals("approved"))
+    if (serverReply.equals("approved"))
+    {
+      loggedUser = lo;
+      sendMessage(new MessageObject("  '" + loggedUser.getUsername() + " -connected'", loggedUser.getUsername(), new ArrayList<>()));
+    }
+    else
       throw new DeniedLoginException(serverReply);
   }
 
@@ -87,6 +93,8 @@ public class RMIClient implements Client, Client_Remote
   @Override public void disconnect()
   {
     try {
+      if (loggedUser != null)
+        serverStub.rmiChat(new MessageObject("  '" + loggedUser.getUsername() + " -disconnected'", loggedUser.getUsername(), new ArrayList<>()));
       serverStub.disconnect(this);
     } catch (RemoteException e) {
       e.printStackTrace();

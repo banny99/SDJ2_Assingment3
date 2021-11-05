@@ -1,6 +1,6 @@
 package server;
 
-import server.networking.RMIServerSocket;
+import server.networking.RMIServer;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -13,7 +13,7 @@ public class RunRMIServer
     try
     {
       startRegistry();
-      RMIServerSocket rmiServerSocket = new RMIServerSocket();
+      RMIServer rmiServerSocket = new RMIServer();
       rmiServerSocket.start();
       System.out.println("Server launched ...");
     }

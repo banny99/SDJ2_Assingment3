@@ -1,7 +1,8 @@
-package client.networking;
+package server.networking;
 
 import shared.LoginObject;
 import shared.MessageObject;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
