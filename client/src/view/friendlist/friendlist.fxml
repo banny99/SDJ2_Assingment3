@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="98.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.friendlist.FriendListViewController">
+   <children>
+      <VBox layoutY="-1.0" prefHeight="400.0" prefWidth="300.0">
+         <children>
+            <Label text="Online friends" textFill="#619ed4">
+               <font>
+                  <Font size="25.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="10.0" top="10.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="loggedUserLabel" text="(logged-in as: ...)">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" />
+               </VBox.margin>
+            </Label>
+            <TableView fx:id="activeConnectionsTab" editable="true" maxWidth="290.0" prefHeight="300.0" prefWidth="280.0" style="-fx-border-color: #619ed4;">
+               <columns>
+                  <TableColumn fx:id="onlineFriendsCol" minWidth="200.0" prefWidth="220.0" text="Online Friends" />
+                  <TableColumn fx:id="timeCol" minWidth="50.0" prefWidth="70.0" text="Time" />
+               </columns>
+               <VBox.margin>
+                  <Insets left="5.0" />
+               </VBox.margin>
+            </TableView>
+            <HBox alignment="CENTER" prefHeight="0.0" prefWidth="300.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#openChatButtonPressed" text="open chat">
+                     <HBox.margin>
+                        <Insets top="2.0" />
+                     </HBox.margin></Button>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
