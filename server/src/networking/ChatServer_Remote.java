@@ -2,11 +2,11 @@ package networking;
 
 import shared.LoginObject;
 import shared.MessageObject;
-import java.rmi.Remote;
+import utility.observer.subject.RemoteSubject;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public interface ChatServer_Remote extends Remote
+public interface ChatServer_Remote extends RemoteSubject<MessageObject, MessageObject>
 {
   String rmiLogin(Client_Remote client, LoginObject loginObject) throws RemoteException;
   ArrayList<LoginObject> getConnections() throws RemoteException;

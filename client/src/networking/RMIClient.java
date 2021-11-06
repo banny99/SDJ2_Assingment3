@@ -1,6 +1,7 @@
 package networking;
 
 import shared.*;
+import utility.observer.event.ObserverEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.MalformedURLException;
@@ -24,6 +25,8 @@ public class RMIClient implements Client, Client_Remote
     try {
       serverStub = (ChatServer_Remote) Naming.lookup("rmi://localhost:1099/messenger");
       UnicastRemoteObject.exportObject(this, 0);
+
+      serverStub.addListener(this);
     } catch (NotBoundException | MalformedURLException | RemoteException e) {
       e.printStackTrace();
     }
@@ -101,5 +104,14 @@ public class RMIClient implements Client, Client_Remote
 
     System.out.println("Client disconnected ...");
     System.exit(0);
+  }
+
+
+
+  @Override public void propertyChange(
+      ObserverEvent<MessageObject, MessageObject> event) throws RemoteException
+  {
+    if (event.getValue2().getChatMembers().isEmpty() || event.getValue2().getChatMembers().contains(loggedUser))
+      changeSupport.firePropertyChange("msg", null, event.getValue2());
   }
 }

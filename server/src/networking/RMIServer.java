@@ -4,6 +4,8 @@ import model.Password;
 import model.Username;
 import shared.LoginObject;
 import shared.MessageObject;
+import utility.observer.listener.GeneralListener;
+import utility.observer.subject.PropertyChangeHandler;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -16,11 +18,15 @@ public class RMIServer extends UnicastRemoteObject implements ChatServer_Remote
   private ArrayList<LoginObject> connections;
   private ArrayList<Client_Remote> clientStubs;
 
+  private PropertyChangeHandler<MessageObject, MessageObject> propertyChangeHandler;
+
   public RMIServer() throws RemoteException
   {
     super();
     connections = new ArrayList<>();
     clientStubs = new ArrayList<>();
+
+    propertyChangeHandler = new PropertyChangeHandler<>(this, true);
   }
 
   public void start() throws MalformedURLException, RemoteException
@@ -64,16 +70,18 @@ public class RMIServer extends UnicastRemoteObject implements ChatServer_Remote
 
   @Override public void rmiChat(MessageObject messageObject) throws RemoteException
   {
-    if (messageObject.getChatMembers().isEmpty())
-    {
-      for(Client_Remote c : clientStubs)
-        c.receiveReply(messageObject);
-    }
-    else
-    {
-      for (LoginObject lo : messageObject.getChatMembers())
-        clientStubs.get(connections.indexOf(lo)).receiveReply(messageObject);
-    }
+//    if (messageObject.getChatMembers().isEmpty())
+//    {
+//      for(Client_Remote c : clientStubs)
+//        c.receiveReply(messageObject);
+//    }
+//    else
+//    {
+//      for (LoginObject lo : messageObject.getChatMembers())
+//        clientStubs.get(connections.indexOf(lo)).receiveReply(messageObject);
+//    }
+
+    propertyChangeHandler.firePropertyChange("message", null, messageObject);
   }
 
 
@@ -93,4 +101,17 @@ public class RMIServer extends UnicastRemoteObject implements ChatServer_Remote
     clientStubs.remove(client);
   }
 
+  @Override public boolean addListener(
+      GeneralListener<MessageObject, MessageObject> listener,
+      String... propertyNames) throws RemoteException
+  {
+    return propertyChangeHandler.addListener(listener, propertyNames);
+  }
+
+  @Override public boolean removeListener(
+      GeneralListener<MessageObject, MessageObject> listener,
+      String... propertyNames) throws RemoteException
+  {
+    return propertyChangeHandler.removeListener(listener, propertyNames);
+  }
 }
