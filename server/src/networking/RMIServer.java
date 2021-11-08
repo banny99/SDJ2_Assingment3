@@ -70,18 +70,18 @@ public class RMIServer extends UnicastRemoteObject implements ChatServer_Remote
 
   @Override public void rmiChat(MessageObject messageObject) throws RemoteException
   {
-//    if (messageObject.getChatMembers().isEmpty())
-//    {
-//      for(Client_Remote c : clientStubs)
-//        c.receiveReply(messageObject);
-//    }
-//    else
-//    {
-//      for (LoginObject lo : messageObject.getChatMembers())
-//        clientStubs.get(connections.indexOf(lo)).receiveReply(messageObject);
-//    }
+    if (messageObject.getChatMembers().isEmpty())
+    {
+      for(Client_Remote c : clientStubs)
+        c.receiveReply(messageObject);
+    }
+    else
+    {
+      for (LoginObject lo : messageObject.getChatMembers())
+        clientStubs.get(connections.indexOf(lo)).receiveReply(messageObject);
+    }
 
-    propertyChangeHandler.firePropertyChange("message", null, messageObject);
+//    propertyChangeHandler.firePropertyChange("message", null, messageObject);
   }
 
 

@@ -26,7 +26,7 @@ public class RMIClient implements Client, Client_Remote
       serverStub = (ChatServer_Remote) Naming.lookup("rmi://localhost:1099/messenger");
       UnicastRemoteObject.exportObject(this, 0);
 
-      serverStub.addListener(this);
+//      serverStub.addListener(this);
     } catch (NotBoundException | MalformedURLException | RemoteException e) {
       e.printStackTrace();
     }
@@ -65,6 +65,12 @@ public class RMIClient implements Client, Client_Remote
   {
     changeSupport.firePropertyChange("msg", null, msg);
   }
+
+  @Override public String getUsername() throws RemoteException
+  {
+    return loggedUser.getUsername();
+  }
+
 
   @Override public void requestConnections()
   {
@@ -105,8 +111,6 @@ public class RMIClient implements Client, Client_Remote
     System.out.println("Client disconnected ...");
     System.exit(0);
   }
-
-
 
   @Override public void propertyChange(
       ObserverEvent<MessageObject, MessageObject> event) throws RemoteException

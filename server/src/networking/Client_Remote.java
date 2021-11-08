@@ -12,4 +12,5 @@ public interface Client_Remote extends RemoteListener<MessageObject, MessageObje
 {
   void updateConnections(ArrayList<LoginObject> connections) throws RemoteException;
   void receiveReply(MessageObject msg) throws RemoteException;
+  String getUsername() throws RemoteException;
 }
